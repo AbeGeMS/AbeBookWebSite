@@ -1,0 +1,16 @@
+.basis-color {
+  color: #666666;
+}
+.home-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.home-page-content {
+  font-size: 25px;
+  flex: 1;
+}
+.show-scroll-y {
+  max-height: 94%;
+  overflow-y: auto;
+}
