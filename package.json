@@ -1,0 +1,28 @@
+{
+  "name": "nodejsproject",
+  "version": "1.0.0",
+  "description": "a scanfolder for a website usig typeScript as language; expressjs as server side framework;React as client side framework; Jasmine as UT engine; nodemon is debug tool; VsCode as IDE.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "build": "node_modules/.bin/gulp",
+    "watch": "node_modules/.bin/gulp watch",
+    "test": "node_modules/.bin/jasmine --config=debug/test/jasmine.json --reporter=jasmine-console-reporter",
+    "karma": "node_modules/.bin/karma start karma.config.js",
+    "nodemon": "node_modules/.bin/nodemon.cmd debug/app.js",
+    "forever": "node_modules/.bin/forever start -a -l forever.log -o out.log -e err.log -w --watchDirectory ./debug debug/app.js"
+  },
+  "author": "Abe Ge",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.3",
+    "forever": "^0.15.3",
+    "log4js": "^3.0.6",
+    "redis": "^2.8.0"
+  },
+  "repository": "",
+  "private": false
+}
