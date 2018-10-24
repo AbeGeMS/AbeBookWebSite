@@ -216,17 +216,17 @@ function requestGetBooks(state, action) {
         return state;
     }
     var bookMark = new bookMarkModel_1.BookMark();
+    notificationReducer_1.NotifyAsync("Start to get books", common_1.DingamStyle.Secondary, true);
     bookMark.getBooks().then(function (books) {
         dataContainer_1.default().dispatch({
             type: Constants.GetBooks_Response,
             status: baseReducer_1.RequestStatus.Success,
             books: books,
         });
-        notificationReducer_1.Notify("get books success", common_1.DingamStyle.Success, true);
+        notificationReducer_1.NotifyAsync("get books success", common_1.DingamStyle.Success, true);
     }, function (error) {
-        notificationReducer_1.Notify("Failed to get books " + error.message, common_1.DingamStyle.Alert, true);
+        notificationReducer_1.NotifyAsync("Failed to get books " + error.message, common_1.DingamStyle.Alert, true);
     });
-    notificationReducer_1.NotifyAsync("Start to get books", common_1.DingamStyle.Secondary, true);
     return __assign({}, state, { status: baseReducer_1.RequestStatus.Start });
 }
 function responseGetBooks(state, action) {
@@ -333,9 +333,10 @@ function getTableOfContent_Request_Handler(state, action) {
     if (action.type === CONST.GetTableOfContents_Request) {
         var book = new bookModel_1.BookModel();
         var bookMark = new bookMarkModel_1.BookMark();
+        notificationReducer_1.NotifyAsync("Start to get book " + action.bookId + "...", common_1.DingamStyle.Secondary, true);
         $.when(book.getTableOfContents(action.bookId), bookMark.getLatestChapter(action.bookId))
             .then(function (table, chapterIndex) {
-            notificationReducer_1.Notify("succes get the table of content for book " + action.bookId, common_1.DingamStyle.Success);
+            notificationReducer_1.NotifyAsync("succes get the table of content for book " + action.bookId, common_1.DingamStyle.Success);
             setTimeout(function () {
                 var newaction = {
                     type: CONST.GetTableOfContents_Response,
@@ -346,8 +347,7 @@ function getTableOfContent_Request_Handler(state, action) {
                 };
                 dataContainer_1.default().dispatch(newaction);
             }, 0);
-        }, function (err) { return notificationReducer_1.Notify("Failed to get the table of content casue: " + JSON.stringify(err), common_1.DingamStyle.Alert); });
-        notificationReducer_1.NotifyAsync("Start to get book " + action.bookId + "...", common_1.DingamStyle.Secondary, true);
+        }, function (err) { return notificationReducer_1.NotifyAsync("Failed to get the table of content casue: " + JSON.stringify(err), common_1.DingamStyle.Alert); });
     }
     return __assign({}, state, { status: baseReducer_1.RequestStatus.Start });
 }
@@ -362,8 +362,9 @@ function getContent_Request_Handler(state, action) {
         var book = new bookModel_1.BookModel();
         var startIndex = state.table.findIndex(function (v) { return v.Href === action.chapterId; });
         var list = state.table.slice(startIndex, startIndex + 5).map(function (v) { return v.Href; });
+        notificationReducer_1.NotifyAsync("Start to loading content of chapter " + action.chapterId, common_1.DingamStyle.Secondary);
         book.getBookContent(action.bookId, list).then(function (contents) {
-            notificationReducer_1.Notify("Success get the book content of chapter " + action.type, common_1.DingamStyle.Success);
+            notificationReducer_1.NotifyAsync("Success get the book content of chapter " + action.type, common_1.DingamStyle.Success);
             setTimeout(function () {
                 var newAction = {
                     type: CONST.GetContent_Response,
@@ -372,8 +373,7 @@ function getContent_Request_Handler(state, action) {
                 };
                 dataContainer_1.default().dispatch(newAction);
             }, 0);
-        }, function (err) { return notificationReducer_1.Notify("Failed to get content by " + err, common_1.DingamStyle.Alert); });
-        notificationReducer_1.NotifyAsync("Start to loading content of chapter " + action.chapterId, common_1.DingamStyle.Secondary);
+        }, function (err) { return notificationReducer_1.NotifyAsync("Failed to get content by " + err, common_1.DingamStyle.Alert); });
     }
     return __assign({}, state, { status: baseReducer_1.RequestStatus.Start });
 }
@@ -905,7 +905,7 @@ var TableOfContents = /** @class */ (function (_super) {
     TableOfContents.prototype.onListChange = function () {
         var book = dataContainer_1.default().getState().book;
         var table = book.table, latestCharpter = book.latestCharpter, bookId = book.bookId, status = book.status;
-        if (this.state.bookId !== bookId && status == baseReducer_1.RequestStatus.Success) {
+        if (status == baseReducer_1.RequestStatus.Success) {
             var latest = table[latestCharpter];
             console.log("this lates chapter is " + (latest && latest.Title));
             this.setState({
@@ -1007,12 +1007,13 @@ var BookList = /** @class */ (function (_super) {
             this.state.books.map(function (book) {
                 return React.createElement(amazeui_dingtalk_1.List.Item, { key: book.BookId, href: "#/" + book.BookId, title: book.Name, onClick: _this.onItemClick.bind(_this, book.BookId) });
             });
-        return React.createElement(amazeui_dingtalk_1.List, null,
-            React.createElement(NavTitle_1.NavTitle, null),
-            list,
-            React.createElement(amazeui_dingtalk_1.Button, { hollow: true, noHb: true, block: true, onClick: this.refreshBookList },
-                React.createElement(amazeui_dingtalk_1.Icon, { name: "refresh" }),
-                "Refresh"));
+        return React.createElement("div", { className: "show-scroll-y" },
+            React.createElement(amazeui_dingtalk_1.List, null,
+                React.createElement(NavTitle_1.NavTitle, null),
+                list,
+                React.createElement(amazeui_dingtalk_1.Button, { hollow: true, noHb: true, block: true, onClick: this.refreshBookList },
+                    React.createElement(amazeui_dingtalk_1.Icon, { name: "refresh" }),
+                    "Refresh")));
     };
     BookList.prototype.refreshBookList = function () {
         var action = {
@@ -1085,7 +1086,7 @@ var Contents = /** @class */ (function (_super) {
             : this.state.contents.map(function (c, index) {
                 return React.createElement("dl", { key: index },
                     React.createElement("dt", null, c.Title),
-                    c.Content && c.Content.map(function (p, sub) { return React.createElement("dd", { key: sub }, p); }));
+                    React.createElement("dd", null, c.Content && c.Content.reduce(function (p, c) { return "" + p + c; })));
             });
         return React.createElement("div", { className: "test-24 show-scroll-y" },
             React.createElement("dl", null, content));
@@ -1263,7 +1264,7 @@ var NotificationControl = /** @class */ (function (_super) {
     NotificationControl.prototype.onMessageChange = function () {
         var notification = dataContainer_1.default().getState().notification;
         var NotifyMessage = notification.NotifyMessage, NotifyStyle = notification.NotifyStyle, IsVissible = notification.IsVissible;
-        if (IsVissible) {
+        if (IsVissible && this.state.Message !== NotifyMessage) {
             this.setState({ Message: NotifyMessage || "", Style: NotifyStyle, Visible: !!NotifyMessage && IsVissible });
         }
     };
