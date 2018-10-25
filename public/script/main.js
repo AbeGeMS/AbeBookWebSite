@@ -440,6 +440,7 @@ exports.GetTableOfContents_Request = "GetTableOfContents_Request";
 exports.GetTableOfContents_Response = "GetTableOfContetns_Response";
 exports.GetContent_Request = "GetContent_Request";
 exports.GetContent_Response = "GetContent_Response";
+exports.SetCorrectionList = "SetCorrectionList";
 exports.CorrectionList = [
     { pattern: "sè", value: "色" },
     { pattern: "rì", value: "日" },
@@ -660,6 +661,7 @@ var dataContainer_1 = __webpack_require__(/*! ./dataContainer */ "./src/public/s
 var Settings_HandlerMap = (_a = {},
     _a[Constants.SetBookDomain_Request] = setBookDomain_Request,
     _a[Constants.SetBookDomain_Response] = setBookDomain_Response,
+    _a[Constants.SetCorrectionList] = setCorrectionList,
     _a);
 exports.settingsReducer = function (state, action) {
     if (state === void 0) { state = { bookDomain: null, corrections: Constants.CorrectionList }; }
@@ -685,6 +687,21 @@ function setBookDomain_Response(state, action) {
         return __assign({}, state, { status: action.status });
     }
     return __assign({}, state);
+}
+function setCorrectionList(state, action) {
+    if (action.type !== Constants.SetCorrectionList) {
+        return __assign({}, state);
+    }
+    if (action.addRule && action.addRule.length > 0) {
+        (_a = state.corrections).push.apply(_a, action.addRule);
+        return __assign({}, state);
+    }
+    if (!!action.deleteRuleIndex && action.deleteRuleIndex > -1) {
+        state.corrections.splice(action.deleteRuleIndex, 1);
+        return __assign({}, state);
+    }
+    return __assign({}, state);
+    var _a;
 }
 var _a;
 
@@ -1064,6 +1081,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "react");
 var dataContainer_1 = __webpack_require__(/*! ../model/dataContainer */ "./src/public/script/model/dataContainer.ts");
@@ -1086,15 +1111,26 @@ var Contents = /** @class */ (function (_super) {
             : this.state.contents.map(function (c, index) {
                 return React.createElement("dl", { key: index },
                     React.createElement("dt", null, c.Title),
-                    React.createElement("dd", null, c.Content && c.Content.reduce(function (p, c) { return "" + p + c; })));
+                    c.Content && c.Content.map(function (p, pIndex) { return React.createElement("p", { key: pIndex }, p); }),
+                    ">");
             });
         return React.createElement("div", { className: "test-24 show-scroll-y" },
             React.createElement("dl", null, content));
     };
     Contents.prototype.onContentChange = function () {
-        var book = dataContainer_1.default().getState().book;
+        var _a = dataContainer_1.default().getState(), book = _a.book, setting = _a.setting;
         var contents = book.contents;
-        this.setState({ contents: contents });
+        var corrections = setting.corrections;
+        var stateFirstTitle = this.state.contents && this.state.contents[0] && this.state.contents[0].Title;
+        var firstTitle = contents && contents[0] && contents[0].Title;
+        if (stateFirstTitle === firstTitle) {
+            return;
+        }
+        // relace words which in the rule list
+        var result = contents.map(function (book) {
+            return __assign({}, book, { Content: book.Content.map(function (p) { return corrections.reduce(function (pre, curr) { return pre.replace(new RegExp(curr.pattern, "gm"), curr.value); }, p); }) });
+        });
+        this.setState({ contents: result });
     };
     return Contents;
 }(baseComponent_1.BaseComponent));
@@ -1312,9 +1348,7 @@ var TabBarControl = /** @class */ (function (_super) {
             selected: "",
         };
         _this.onClick = function (key) {
-            _this.setState({ selected: key }, function () {
-                _this.props.onClick(key);
-            });
+            _this.props.onClick(key);
         };
         return _this;
     }
