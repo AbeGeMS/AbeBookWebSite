@@ -924,9 +924,8 @@ var TableOfContents = /** @class */ (function (_super) {
         var table = book.table, latestCharpter = book.latestCharpter, bookId = book.bookId, status = book.status;
         if (status == baseReducer_1.RequestStatus.Success) {
             var latest = table[latestCharpter];
-            console.log("this lates chapter is " + (latest && latest.Title));
             this.setState({
-                list: latest ? [latest].concat(table) : table,
+                list: latest ? [latest].concat(table.reverse()) : table.reverse(),
                 bookId: bookId
             });
         }
