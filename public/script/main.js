@@ -284,7 +284,7 @@ var BookModel = /** @class */ (function () {
         var _this = this;
         return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) { return Array.isArray(contents) ?
             contents.map(function (v) { return v[0]; }) :
-            contents; }, function (err) { return err; });
+            [contents]; }, function (err) { return err; });
     };
     BookModel.prototype.getTableOfContents = function (bookId) {
         return this.provider.getbookTableOfContent(bookId);
