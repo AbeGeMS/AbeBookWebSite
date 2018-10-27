@@ -283,7 +283,7 @@ var BookModel = /** @class */ (function () {
     BookModel.prototype.getBookContent = function (bookId, chapter) {
         var _this = this;
         return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) {
-            if ((contents).length == 3 && !(contents[1]).Title) {
+            if (!!contents.Title) {
                 contents = [contents];
             }
             return contents.map(function (c) { return c[0]; });
