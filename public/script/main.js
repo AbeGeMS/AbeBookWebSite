@@ -1128,7 +1128,9 @@ var Contents = /** @class */ (function (_super) {
         }
         // relace words which in the rule list
         var result = contents.map(function (book) {
-            return __assign({}, book, { Content: book.Content.map(function (p) { return corrections.reduce(function (pre, curr) { return pre.replace(new RegExp(curr.pattern, "gm"), curr.value); }, p); }) });
+            var adjustContent = book.Content &&
+                book.Content.map(function (p) { return corrections.reduce(function (pre, curr) { return pre.replace(new RegExp(curr.pattern, "gm"), curr.value); }, p); });
+            return __assign({}, book, { Content: adjustContent || [] });
         });
         this.setState({ contents: result });
     };
