@@ -282,13 +282,7 @@ var BookModel = /** @class */ (function () {
     });
     BookModel.prototype.getBookContent = function (bookId, chapter) {
         var _this = this;
-        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function () {
-            var contents = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                contents[_i] = arguments[_i];
-            }
-            return contents.map(function (v) { return v[0] || v; });
-        }, function (err) { return err; });
+        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) { return contents.map(function (v) { return v[0]; }); }, function (err) { return err; });
     };
     BookModel.prototype.getTableOfContents = function (bookId) {
         return this.provider.getbookTableOfContent(bookId);
@@ -1109,7 +1103,7 @@ var Contents = /** @class */ (function (_super) {
             && this.state.contents.length > 0 ?
             React.createElement("dt", null, "loading...")
             : this.state.contents.map(function (c, index) {
-                return React.createElement("div", null,
+                return React.createElement("div", { key: index },
                     React.createElement("h4", null, c.Title),
                     c.Content && c.Content.map(function (p, pIndex) { return React.createElement("p", { key: pIndex }, p); }));
             });
