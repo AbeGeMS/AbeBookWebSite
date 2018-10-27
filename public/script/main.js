@@ -282,9 +282,12 @@ var BookModel = /** @class */ (function () {
     });
     BookModel.prototype.getBookContent = function (bookId, chapter) {
         var _this = this;
-        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) { return Array.isArray(contents) ?
-            contents.map(function (v) { return v[0]; }) :
-            [contents]; }, function (err) { return err; });
+        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) {
+            if ((contents).length == 3 && !(contents[1]).Title) {
+                contents = [contents];
+            }
+            return contents.map(function (c) { return c[0]; });
+        }, function (err) { return err; });
     };
     BookModel.prototype.getTableOfContents = function (bookId) {
         return this.provider.getbookTableOfContent(bookId);
@@ -1109,8 +1112,7 @@ var Contents = /** @class */ (function (_super) {
                     React.createElement("h4", null, c.Title),
                     c.Content && c.Content.map(function (p, pIndex) { return React.createElement("p", { key: pIndex }, p); }));
             });
-        return React.createElement("div", { className: "test-24 show-scroll-y" },
-            React.createElement("dl", null, content));
+        return React.createElement("div", { className: "test-24 show-scroll-y" }, content);
     };
     Contents.prototype.onContentChange = function () {
         var _a = dataContainer_1.default().getState(), book = _a.book, setting = _a.setting;
