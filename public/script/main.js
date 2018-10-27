@@ -1109,10 +1109,9 @@ var Contents = /** @class */ (function (_super) {
             && this.state.contents.length > 0 ?
             React.createElement("dt", null, "loading...")
             : this.state.contents.map(function (c, index) {
-                return React.createElement("dl", { key: index },
-                    React.createElement("dt", null, c.Title),
-                    c.Content && c.Content.map(function (p, pIndex) { return React.createElement("p", { key: pIndex }, p); }),
-                    ">");
+                return React.createElement("div", null,
+                    React.createElement("h4", null, c.Title),
+                    c.Content && c.Content.map(function (p, pIndex) { return React.createElement("p", { key: pIndex }, p); }));
             });
         return React.createElement("div", { className: "test-24 show-scroll-y" },
             React.createElement("dl", null, content));
