@@ -287,7 +287,7 @@ var BookModel = /** @class */ (function () {
             for (var _i = 0; _i < arguments.length; _i++) {
                 contents[_i] = arguments[_i];
             }
-            return contents.map(function (v) { return v[0]; });
+            return contents.map(function (v) { return v[0] || v.Content; });
         }, function (err) { return err; });
     };
     BookModel.prototype.getTableOfContents = function (bookId) {
