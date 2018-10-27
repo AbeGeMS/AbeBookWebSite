@@ -282,9 +282,15 @@ var BookModel = /** @class */ (function () {
     });
     BookModel.prototype.getBookContent = function (bookId, chapter) {
         var _this = this;
-        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function (contents) {
-            if (!!contents.Title) {
-                contents = [contents];
+        return $.when.apply($, chapter.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function () {
+            var contents = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                contents[_i] = arguments[_i];
+            }
+            if (contents.length === 3 && !contents[1].Title) {
+                var result = [];
+                result.push(contents[0]);
+                return result;
             }
             return contents.map(function (c) { return c[0]; });
         }, function (err) { return err; });
