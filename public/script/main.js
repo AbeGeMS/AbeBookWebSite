@@ -864,6 +864,65 @@ exports.NavTitle = NavTitle;
 
 /***/ }),
 
+/***/ "./src/public/script/view/SettingPage.tsx":
+/*!************************************************!*\
+  !*** ./src/public/script/view/SettingPage.tsx ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(/*! react */ "react");
+var baseComponent_1 = __webpack_require__(/*! ./baseComponent */ "./src/public/script/view/baseComponent.tsx");
+var Constants = __webpack_require__(/*! ../model/constants */ "./src/public/script/model/constants.ts");
+var amazeui_dingtalk_1 = __webpack_require__(/*! amazeui-dingtalk */ "amazeui-dingtalk");
+var SettingPage = /** @class */ (function (_super) {
+    __extends(SettingPage, _super);
+    function SettingPage(prop) {
+        var _this = _super.call(this, prop) || this;
+        _this.OnContentChange = _this.OnContentChange.bind(_this);
+        _this.ChangeContent = _this.ChangeContent.bind(_this);
+        return _this;
+    }
+    SettingPage.prototype.render = function () {
+        if (this.state && this.state.Corrected) {
+            return React.createElement("div", null, this.state.Content);
+        }
+        else {
+            return (React.createElement("div", null,
+                React.createElement("textarea", { onChange: this.OnContentChange }),
+                React.createElement(amazeui_dingtalk_1.Button, { onClick: this.ChangeContent }, "Change")));
+        }
+    };
+    SettingPage.prototype.OnContentChange = function (e) {
+        this.setState({ Content: e.target.value });
+    };
+    SettingPage.prototype.ChangeContent = function () {
+        var result = this.state.Content;
+        result = Constants.CorrectionList.reduce(function (pre, curr) {
+            return pre.replace(new RegExp(curr.pattern, "gm"), curr.value);
+        }, result);
+        this.setState({ Content: result, Corrected: true });
+    };
+    return SettingPage;
+}(baseComponent_1.BaseComponent));
+exports.SettingPage = SettingPage;
+
+
+/***/ }),
+
 /***/ "./src/public/script/view/TableOfContents.tsx":
 /*!****************************************************!*\
   !*** ./src/public/script/view/TableOfContents.tsx ***!
@@ -1173,6 +1232,7 @@ var TableOfContents_1 = __webpack_require__(/*! ./TableOfContents */ "./src/publ
 var dataContainer_1 = __webpack_require__(/*! ../model/dataContainer */ "./src/public/script/model/dataContainer.ts");
 var contents_1 = __webpack_require__(/*! ./contents */ "./src/public/script/view/contents.tsx");
 var baseComponent_1 = __webpack_require__(/*! ./baseComponent */ "./src/public/script/view/baseComponent.tsx");
+var SettingPage_1 = __webpack_require__(/*! ./SettingPage */ "./src/public/script/view/SettingPage.tsx");
 var HomePage = /** @class */ (function (_super) {
     __extends(HomePage, _super);
     function HomePage(prop) {
@@ -1204,6 +1264,10 @@ var HomePage = /** @class */ (function (_super) {
                 this.setState({ Contents: React.createElement(bookList_1.BookList, { onItemClick: this.createTableOfContents }) });
                 break;
             case tabBarControl_1.TabCategory.Gear:
+                this.setState({
+                    Contents: React.createElement(SettingPage_1.SettingPage, null)
+                });
+                break;
             case tabBarControl_1.TabCategory.Next:
                 this.setState({ Contents: undefined });
                 break;
