@@ -284,6 +284,7 @@ var Abe;
                     { s: "nbsp;", t: "" },
                     { s: "[a-z]", t: "" },
                     { s: "[A-Z]", t: "" },
+                    { s: "\?", t: "." },
                 ];
             };
             return searchPage;
