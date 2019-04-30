@@ -83,7 +83,7 @@ var Abe;
             WebCrawler.prototype.getBookList = function (rootUrl) {
                 var _this = this;
                 var defer = b.defer();
-                this.redisClient.scan('0', 'COUNT', '20', function (err, reply) {
+                this.redisClient.scan('0', 'COUNT', '100', function (err, reply) {
                     if (!!err) {
                         defer.reject("scan resdis failed");
                         console.log("WebCrawler.getBookList: scan redis Error is " + err);
