@@ -389,7 +389,7 @@ var DataProvider = /** @class */ (function () {
             type: "GET",
             url: root + "latestChapter?id=" + bookId,
             success: function (chapterNumber) { return chapterNumber.latestChapter; },
-        });
+        }).then(function (data) { return data.latestChapter; });
     };
     DataProvider.prototype.putLastestChapterNumber = function (bookId, chapterId) {
         return $.ajax({
@@ -403,7 +403,7 @@ var DataProvider = /** @class */ (function () {
             url: root + "BookDomain/" + utility_1.encodingStr(bookDomain),
             success: function () { return true; },
             error: function (err) { return false; },
-        });
+        }).then(function (data) { return true; }, function (jqr, status, error) { return false; });
     };
     DataProvider.prototype.getBookMarks = function () {
         return $.ajax({
