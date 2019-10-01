@@ -229,7 +229,7 @@ var BookModel = /** @class */ (function () {
     };
     BookModel.prototype.downloadCharpters = function (startChapter) {
         var index = this.tableOfContent.indexOf(startChapter);
-        return this.tableOfContent.slice(index, 5);
+        return this.tableOfContent.slice(index, index + 5);
     };
     return BookModel;
 }());
