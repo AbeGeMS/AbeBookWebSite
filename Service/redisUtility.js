@@ -4,7 +4,7 @@ var Promise = require("bluebird");
 var redis_1 = require("redis");
 var redisPort = 6380;
 var redisAddress = "myBookmark.redis.cache.windows.net";
-var redisPassword = "";
+var redisPassword = "u93X6QKxkPtUae0XZ6eWE2HwFrl0xjP4PADkgOMei9M=";
 var expiryTimeSpan = 1296000;
 var RedisAgent = /** @class */ (function () {
     function RedisAgent() {
