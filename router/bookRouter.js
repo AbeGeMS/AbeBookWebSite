@@ -23,7 +23,7 @@ router.post('/book', function (req, res) {
     var bookService = new bookService_1.BookService(bookDomain, new httpUtility_1.HttpAgent());
     bookService.getContent(bookId, chapterId, index)
         .then(function (content) { return res.json(content); });
-    console.info(routerName + ".book:\n        Search book " + bookId + " chapter " + chapterId);
+    console.info("POST " + routerName + ".book:\n        Search book " + bookId + " chapter " + chapterId);
 });
 router.post('/tableOfContent', function (req, res) {
     var bookId = req.body.id;
@@ -37,7 +37,7 @@ router.post('/tableOfContent', function (req, res) {
     var bookService = new bookService_1.BookService(bookDomain, new httpUtility_1.HttpAgent());
     bookService.getTableOfContent(bookId)
         .then(function (tableOfContent) { return res.json(tableOfContent); });
-    console.info(routerName + ".tableOfContent:\n    get list of book " + bookId + ".");
+    console.info("POST " + routerName + ".tableOfContent:\n    get list of book " + bookId + ".");
 });
 router.put("/BookDomain/:id", function (req, res) {
     var bookid = utility_1.decodingStr(req.params["id"]);

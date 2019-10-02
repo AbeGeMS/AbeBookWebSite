@@ -35,7 +35,13 @@ var CacheService = /** @class */ (function () {
         }
     };
     CacheService.prototype.setBookMark = function (bookId, charpter) {
-        return this._redisAgent.set(bookId, charpter);
+        var charpterNumber = parseInt(charpter, 10);
+        if (charpterNumber >= 0) {
+            return this._redisAgent.set(bookId, charpterNumber.toString());
+        }
+        else {
+            return Promise.reject("invalid parameter. the @charpter:" + charpter + " must be a number");
+        }
     };
     CacheService.prototype.extendExpiry = function (bookId) {
         try {
