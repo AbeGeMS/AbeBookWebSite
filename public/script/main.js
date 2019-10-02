@@ -127,8 +127,13 @@ function S4() {
 Object.defineProperty(exports, "__esModule", { value: true });
 var dataProvider_1 = __webpack_require__(/*! ../provider/dataProvider */ "./src/public/script/provider/dataProvider.ts");
 var BookMark = /** @class */ (function () {
-    function BookMark() {
-        this.provider = new dataProvider_1.DataProvider();
+    function BookMark(provider) {
+        if (!!provider) {
+            this.provider = provider;
+        }
+        else {
+            this.provider = new dataProvider_1.DataProvider();
+        }
     }
     Object.defineProperty(BookMark.prototype, "Provider", {
         set: function (provider) {
@@ -157,6 +162,21 @@ var BookMark = /** @class */ (function () {
     BookMark.prototype.getLatestChapter = function (bookId) {
         return this.provider.getLatestChapterNumber(bookId);
     };
+    BookMark.prototype.setLatestCharpter = function (bookId, charpter) {
+        var _this = this;
+        var charpterNumber = parseInt(charpter, 0);
+        if (!Number.isInteger(charpterNumber)) {
+            var result = $.Deferred();
+            result.reject("Invalid parameter. @charpter: " + charpter + " should be a number");
+            return result.promise();
+        }
+        return this.provider.getLatestChapterNumber(bookId)
+            .then(function (v) {
+            if (v < charpterNumber) {
+                _this.provider.putLastestChapterNumber(bookId, charpterNumber);
+            }
+        });
+    };
     return BookMark;
 }());
 exports.BookMark = BookMark;
@@ -175,11 +195,13 @@ exports.BookMark = BookMark;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var dataProvider_1 = __webpack_require__(/*! ../provider/dataProvider */ "./src/public/script/provider/dataProvider.ts");
+var bookMarkModel_1 = __webpack_require__(/*! ./bookMarkModel */ "./src/public/script/model/bookMarkModel.ts");
 var BookModel = /** @class */ (function () {
     function BookModel() {
         this.bookId = null;
         this.tableOfContent = [];
         this.provider = new dataProvider_1.DataProvider();
+        this.bookMark = new bookMarkModel_1.BookMark(this.provider);
     }
     Object.defineProperty(BookModel.prototype, "Provider", {
         get: function () { return this.provider; },
@@ -222,7 +244,11 @@ var BookModel = /** @class */ (function () {
                 return result;
             }
             return contents.map(function (c) { return c[0]; });
-        }, function (err) { return err; });
+        }, function (err) { return err; }).then(function (Content) {
+            var latestCharpterIndex = _this.tableOfContent.indexOf(chapter) + charpters.length;
+            _this.bookMark.setLatestCharpter(bookId, latestCharpterIndex.toString());
+            return Content;
+        });
     };
     BookModel.prototype.getTableOfContents = function (bookId) {
         return this.provider.getbookTableOfContent(bookId);
@@ -514,7 +540,7 @@ var Content = /** @class */ (function (_super) {
         var _this = this;
         if (this.state && this.state.contents) {
             return this.state.contents.map(function (v) {
-                return ([React.createElement("h3", { key: utility_1.guid() }, v.Title)].concat(_this.oneCharter(v.Content)));
+                return ([React.createElement("p", { className: "title", key: utility_1.guid() }, v.Title)].concat(_this.oneCharter(v.Content)));
             });
         }
         return React.createElement("div", { className: "spinner text-secondary" }, "Loading...");
@@ -627,6 +653,9 @@ var HomePage = /** @class */ (function (_super) {
         _this.setComponentState = _this.setComponentState.bind(_this);
         _this.renderContent = _this.renderContent.bind(_this);
         _this.modelFac = new model_1.ModelFactory();
+        _this.state = {
+            currentContent: ContentComponent.Search,
+        };
         return _this;
     }
     HomePage.prototype.componentDidMount = function () {
@@ -750,8 +779,9 @@ var Search = /** @class */ (function (_super) {
     Search.prototype.render = function () {
         return (React.createElement("div", null,
             React.createElement("input", { className: "search-bar", ref: this.searchElement }),
-            React.createElement("button", { className: "search-btn bg-info", onClick: this.onSearchClick }, "Search"),
-            React.createElement("button", { className: "get-lib-btn bg-primary", onClick: this.onGoLibClick }, "Go Book Lib")));
+            React.createElement("div", { className: "search-flex-container" },
+                React.createElement("button", { className: "search-btn bg-info", onClick: this.onSearchClick }, "Search"),
+                React.createElement("button", { className: "get-lib-btn bg-primary", onClick: this.onGoLibClick }, "Go Book Lib"))));
     };
     Search.prototype.onSearchClick = function () {
         var _this = this;

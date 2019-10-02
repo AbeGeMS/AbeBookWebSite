@@ -97,6 +97,17 @@
   color: #6c757d;
   font-size: large;
 }
+.search-flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+}
+.search-flex-container > button {
+  width: 50%;
+  height: auto;
+  margin: 2px;
+  text-align: center;
+  line-height: 75px;
+}
 .btn {
   display: inline-block;
   text-align: center;
@@ -145,4 +156,9 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: large;
   color: #343a40;
+}
+.title {
+  font-size: xx-large;
+  font-style: oblique;
+  font-weight: bolder;
 }
