@@ -40,7 +40,9 @@ var CacheService = /** @class */ (function () {
             return this._redisAgent.set(bookId, charpterNumber.toString());
         }
         else {
-            return Promise.reject("invalid parameter. the @charpter:" + charpter + " must be a number");
+            return new Promise(function (resolve, reject) {
+                reject("invalid parameter. the @charpter:" + charpter + " must be a number");
+            });
         }
     };
     CacheService.prototype.extendExpiry = function (bookId) {

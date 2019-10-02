@@ -419,8 +419,9 @@ var DataProvider = /** @class */ (function () {
     };
     DataProvider.prototype.putLastestChapterNumber = function (bookId, chapterId) {
         return $.ajax({
-            type: "GET",
-            url: root + "putChapter?id=" + bookId + "&chapter=" + chapterId,
+            type: "PUT",
+            url: root + "bookMark?id=" + bookId + "&chapter=" + chapterId,
+            data: { id: bookId, chapter: chapterId },
         });
     };
     DataProvider.prototype.putBookDomain = function (bookDomain) {
