@@ -845,13 +845,19 @@ var TableOfContent = /** @class */ (function (_super) {
         this.props.book.getTableOfContents(bookId)
             .then(function (list) { return _this.setState({ lists: list }); })
             .then(function () { return _this.props.bookMark.getLatestChapter(bookId).then(function (l) {
-            return _this.setState({ latestCharpter: l });
+            return _this.setState({
+                latestCharpter: _this.state.lists.length > l
+                    ? l
+                    : _this.state.lists.length - 1
+            });
         }); });
     };
     TableOfContent.prototype.render = function () {
         var _this = this;
         if (this.state && this.state.lists) {
-            var lastCharpter = this.state.latestCharpter ? this.state.lists[this.state.latestCharpter] : this.state.lists[0];
+            var lastCharpter = this.state.latestCharpter
+                ? this.state.lists[this.state.latestCharpter]
+                : this.state.lists[0];
             var tableOfContent = this.state.lists.map(function (charpter) { return React.createElement("button", { key: utility_1.guid(), className: "primary-btn bg-dak text-white", name: charpter.Href, onClick: _this.onCharpterButtonClick }, charpter.Title); });
             return (React.createElement("div", null,
                 React.createElement("button", { className: "primary-btn bg-dak text-white", name: lastCharpter.Href, onClick: this.onCharpterButtonClick }, lastCharpter.Title),
