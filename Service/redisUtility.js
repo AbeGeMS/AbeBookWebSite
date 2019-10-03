@@ -6,15 +6,15 @@ var redisPort = 6380;
 var redisAddress = "myBookmark.redis.cache.windows.net";
 var redisPassword = "u93X6QKxkPtUae0XZ6eWE2HwFrl0xjP4PADkgOMei9M=";
 var expiryTimeSpan = 1296000;
+var Redis_Client;
 var RedisAgent = /** @class */ (function () {
     function RedisAgent() {
-        this._client = this.createRedisClient();
     }
     RedisAgent.prototype.SCAN = function (start, count) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                _this._client.scan(start.toString(), 'COUNT', count.toString(), function (err, reply) {
+                _this.Client.scan(start.toString(), 'COUNT', count.toString(), function (err, reply) {
                     if (!!err) {
                         reject("scan resdis failed");
                         console.log("WebCrawler.getBookList: scan redis Error is " + err);
@@ -38,7 +38,7 @@ var RedisAgent = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                _this._client.get(key, function (err, value) {
+                _this.Client.get(key, function (err, value) {
                     if (!!err) {
                         reject(err);
                         return;
@@ -56,7 +56,7 @@ var RedisAgent = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                _this._client.set(key, value, function (err, reply) {
+                _this.Client.set(key, value, function (err, reply) {
                     if (!!err) {
                         reject(err);
                         return;
@@ -74,7 +74,7 @@ var RedisAgent = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                _this._client.expire(key, expiryTimeSpan, function (err, reply) {
+                _this.Client.expire(key, expiryTimeSpan, function (err, reply) {
                     if (!!err) {
                         reject(err);
                         return;
@@ -88,25 +88,31 @@ var RedisAgent = /** @class */ (function () {
             }
         });
     };
-    RedisAgent.prototype.createRedisClient = function () {
-        try {
-            if (this._client) {
-                return this._client;
+    Object.defineProperty(RedisAgent.prototype, "Client", {
+        get: function () {
+            try {
+                if (Redis_Client) {
+                    return Redis_Client;
+                }
+                var redisClient = redis_1.createClient(redisPort, redisAddress, {
+                    auth_pass: redisPassword,
+                    tls: {
+                        servername: redisAddress,
+                    },
+                });
+                redisClient.on("error", function (err) { return console.log("RedisAgent.createRedisClient unexpected exception by " + err); });
+                Redis_Client = redisClient;
+                console.error("new redis client");
+                return redisClient;
             }
-            var redisClient = redis_1.createClient(redisPort, redisAddress, {
-                auth_pass: redisPassword,
-                tls: {
-                    servername: redisAddress,
-                },
-            });
-            redisClient.on("error", function (err) { return console.log("RedisAgent.createRedisClient unexpected exception by " + err); });
-            return redisClient;
-        }
-        catch (ex) {
-            console.log("RedisAgent.createRedisClient unexpected exception by " + ex);
-            return null;
-        }
-    };
+            catch (ex) {
+                console.log("RedisAgent.createRedisClient unexpected exception by " + ex);
+                return null;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     return RedisAgent;
 }());
 exports.RedisAgent = RedisAgent;
