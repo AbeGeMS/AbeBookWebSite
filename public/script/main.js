@@ -196,6 +196,7 @@ exports.BookMark = BookMark;
 Object.defineProperty(exports, "__esModule", { value: true });
 var dataProvider_1 = __webpack_require__(/*! ../provider/dataProvider */ "./src/public/script/provider/dataProvider.ts");
 var bookMarkModel_1 = __webpack_require__(/*! ./bookMarkModel */ "./src/public/script/model/bookMarkModel.ts");
+var constants_1 = __webpack_require__(/*! ./constants */ "./src/public/script/model/constants.ts");
 var BookModel = /** @class */ (function () {
     function BookModel() {
         this.bookId = null;
@@ -243,7 +244,10 @@ var BookModel = /** @class */ (function () {
                 result.push(contents[0]);
                 return result;
             }
-            return contents.map(function (c) { return c[0]; });
+            return contents.map(function (c) {
+                c[0].Content = c[0].Content.map(function (paragraph) { return _this.revise(paragraph); });
+                return c[0];
+            });
         }, function (err) { return err; }).then(function (Content) {
             var latestCharpterIndex = _this.tableOfContent.indexOf(chapter) + charpters.length;
             _this.bookMark.setLatestCharpter(bookId, latestCharpterIndex.toString());
@@ -257,9 +261,103 @@ var BookModel = /** @class */ (function () {
         var index = this.tableOfContent.indexOf(startChapter);
         return this.tableOfContent.slice(index, index + 5);
     };
+    BookModel.prototype.revise = function (inputStr) {
+        constants_1.CorrectionList.forEach(function (template) {
+            return inputStr = inputStr.replace(template.pattern, template.value);
+        });
+        return inputStr;
+    };
     return BookModel;
 }());
 exports.BookModel = BookModel;
+
+
+/***/ }),
+
+/***/ "./src/public/script/model/constants.ts":
+/*!**********************************************!*\
+  !*** ./src/public/script/model/constants.ts ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CorrectionList = [
+    { pattern: "sè", value: "色" },
+    { pattern: "rì", value: "日" },
+    { pattern: "jīng", value: "精" },
+    { pattern: "xìng", value: "兴" },
+    { pattern: "()", value: "" },
+    { pattern: "cháo", value: "糙" },
+    { pattern: "jǐng", value: "景" },
+    { pattern: "yīn", value: "音" },
+    { pattern: "sāo", value: "瘙" },
+    { pattern: "yù", value: "域" },
+    { pattern: "レwww.siluke.com♠思♥路♣客レ", value: "" },
+    { pattern: "jiǔ", value: "酒" },
+    { pattern: "zì ", value: "字" },
+    { pattern: "yóu", value: "油" },
+    { pattern: "zhèng", value: "正" },
+    { pattern: "fǔ", value: "府" },
+    { pattern: "nǎi", value: "乃" },
+    { pattern: "jiān", value: "间" },
+    { pattern: "chūn", value: "春" },
+    { pattern: "shè", value: "社" },
+    { pattern: "cāo", value: "糙" },
+    { pattern: "dú", value: "队" },
+    { pattern: "lì", value: "丽" },
+    { pattern: "jǐng", value: "警" },
+    { pattern: "jǐng", value: "警" },
+    { pattern: "chéng", value: "城" },
+    { pattern: "rén", value: "人" },
+    { pattern: "zhèng ", value: "正" },
+    { pattern: "fǔ", value: "腹" },
+    { pattern: "nǎi", value: "奶" },
+    { pattern: "è", value: "色" },
+    { pattern: "jī", value: "基" },
+    { pattern: "méng", value: "萌" },
+    { pattern: "lù", value: "陆" },
+    { pattern: "mí", value: "弥" },
+    { pattern: "hún", value: "魂" },
+    { pattern: "dàng", value: "荡" },
+    { pattern: "bō", value: "波" },
+    { pattern: "shì", value: "市" },
+    { pattern: "nv", value: "女" },
+    { pattern: "『", value: "" },
+    { pattern: "』", value: "" },
+    { pattern: "mén", value: "门" },
+    { pattern: "máo", value: "毛" },
+    { pattern: "hòu", value: "后" },
+    { pattern: "huā", value: "花" },
+    { pattern: "jiāo", value: "交" },
+    { pattern: "ji", value: "基" },
+    { pattern: "dòng", value: "动" },
+    { pattern: "luàn", value: "换" },
+    { pattern: "fù", value: "付" },
+    { pattern: "xìn", value: "信" },
+    { pattern: "xiōng", value: "兄" },
+    { pattern: "yòu", value: "又" },
+    { pattern: "luǒ", value: "裸" },
+    { pattern: "sī", value: "私" },
+    { pattern: "readx", value: "" },
+    { pattern: "&nbsp;", value: "" },
+    { pattern: "nbsp;", value: "" },
+    { pattern: "A|a", value: "欸" },
+    { pattern: "B|b", value: "币" },
+    { pattern: "C|c", value: "思意" },
+    { pattern: "D|d", value: "第" },
+    { pattern: "E|e", value: "亿" },
+    { pattern: "F|f", value: "乂夫" },
+    { pattern: "G|g", value: "之一" },
+    { pattern: "H|h", value: "欸吃" },
+    { pattern: "I|i", value: "爱" },
+    { pattern: "[j-z]", value: "" },
+    { pattern: "[J-Z]", value: "" },
+    { pattern: "？", value: "." },
+    { pattern: "\\\?", value: "." },
+];
 
 
 /***/ }),
