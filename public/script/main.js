@@ -234,19 +234,15 @@ var BookModel = /** @class */ (function () {
     BookModel.prototype.getBookContent = function (bookId, chapter) {
         var _this = this;
         var charpters = this.downloadCharpters(chapter);
-        return $.when.apply($, charpters.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index); })).then(function () {
+        return $.when.apply($, charpters.map(function (value, index) { return _this.provider.getbookContent(bookId, value, index)
+            .then(function (v) { return v; }); })).then(function () {
             var contents = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 contents[_i] = arguments[_i];
             }
-            if (contents.length === 3 && !contents[1].Title) {
-                var result = [];
-                result.push(contents[0]);
-                return result;
-            }
             return contents.map(function (c) {
-                c[0].Content = c[0].Content.map(function (paragraph) { return _this.revise(paragraph); });
-                return c[0];
+                c.Content = c.Content.map(function (paragraph) { return _this.revise(paragraph); });
+                return c;
             });
         }, function (err) { return err; }).then(function (Content) {
             var latestCharpterIndex = _this.tableOfContent.indexOf(chapter) + charpters.length;
