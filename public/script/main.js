@@ -259,7 +259,7 @@ var BookModel = /** @class */ (function () {
     };
     BookModel.prototype.revise = function (inputStr) {
         constants_1.CorrectionList.forEach(function (template) {
-            return inputStr = inputStr.replace(template.pattern, template.value);
+            return inputStr = inputStr.replace(new RegExp(template.pattern, "gm"), template.value);
         });
         return inputStr;
     };
