@@ -352,6 +352,11 @@ exports.CorrectionList = [
     { pattern: "[j-z]", value: "" },
     { pattern: "[J-Z]", value: "" },
     { pattern: "？", value: "." },
+    { pattern: "“", value: "" },
+    { pattern: "”", value: "" },
+    { pattern: "%", value: "" },
+    { pattern: "&", value: "" },
+    { pattern: "\*", value: "" },
     { pattern: "\\\?", value: "." },
 ];
 
