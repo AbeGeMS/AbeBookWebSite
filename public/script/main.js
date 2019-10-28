@@ -440,6 +440,14 @@ var SettingsModel = /** @class */ (function () {
     SettingsModel.prototype.setBookDomain = function (domain) {
         return this.provider.putBookDomain(this.parseDomainUrl(domain)).then(function (value) { return "document.cookie.BaseDomain is " + JSON.stringify(document.cookie); }, function (error) { return "set " + domain + " Failed"; });
     };
+    SettingsModel.prototype.bakupBookLib = function () {
+        return this.provider.backUp();
+    };
+    SettingsModel.prototype.restoreBookLib = function (input) {
+        var _this = this;
+        var booklib = JSON.parse(input);
+        return $.when(booklib.map(function (mark) { return _this.provider.putLastestChapterNumber(mark.bookId, mark.charpterIndex); })).then(function (done) { return true; }, function (err) { return false; });
+    };
     return SettingsModel;
 }());
 exports.SettingsModel = SettingsModel;
@@ -537,6 +545,14 @@ var DataProvider = /** @class */ (function () {
             type: "DELETE",
             url: root + "bookMark/" + bookId,
         });
+    };
+    DataProvider.prototype.backUp = function () {
+        return $.ajax({
+            type: "PUT",
+            url: root + "backup",
+            success: function () { return true; },
+            error: function (err) { return false; },
+        }).then(function (data) { return true; }, function (jqr, status, error) { return false; });
     };
     return DataProvider;
 }());
@@ -733,6 +749,7 @@ var model_1 = __webpack_require__(/*! ../model/model */ "./src/public/script/mod
 var bookLib_1 = __webpack_require__(/*! ./bookLib */ "./src/public/script/view/bookLib.tsx");
 var tableOfContent_1 = __webpack_require__(/*! ./tableOfContent */ "./src/public/script/view/tableOfContent.tsx");
 var content_1 = __webpack_require__(/*! ./content */ "./src/public/script/view/content.tsx");
+var settings_1 = __webpack_require__(/*! ./settings */ "./src/public/script/view/settings.tsx");
 var ContentComponent;
 (function (ContentComponent) {
     ContentComponent[ContentComponent["BookLib"] = 1] = "BookLib";
@@ -786,6 +803,11 @@ var HomePage = /** @class */ (function (_super) {
             book: this.modelFac.Book,
             charpter: this.modelFac.State.SelectedCharpter,
         };
+        var settingProp = {
+            settingModel: this.modelFac.Setting,
+            onBackupDone: function () { return _this.setComponentState(ContentComponent.Search); },
+            onRestoreDone: function () { return _this.setComponentState(ContentComponent.BookLib); },
+        };
         var result;
         switch (this.state.currentContent) {
             case ContentComponent.Search:
@@ -807,6 +829,7 @@ var HomePage = /** @class */ (function (_super) {
                 result = React.createElement(tableOfContent_1.TableOfContent, __assign({}, tableOfContent));
                 break;
             case ContentComponent.Settings:
+                result = React.createElement(settings_1.Settings, __assign({}, settingProp));
                 break;
             default:
                 break;
@@ -880,7 +903,6 @@ var Search = /** @class */ (function (_super) {
     };
     Search.prototype.onSearchClick = function () {
         var _this = this;
-        var bookLib;
         if (this.searchElement.current) {
             this.props.settingModel.setBookDomain(this.searchElement.current.value)
                 .then(function (v) {
@@ -900,6 +922,63 @@ var Search = /** @class */ (function (_super) {
     return Search;
 }(React.Component));
 exports.Search = Search;
+
+
+/***/ }),
+
+/***/ "./src/public/script/view/settings.tsx":
+/*!*********************************************!*\
+  !*** ./src/public/script/view/settings.tsx ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(/*! react */ "react");
+var Settings = /** @class */ (function (_super) {
+    __extends(Settings, _super);
+    function Settings(prop) {
+        var _this = _super.call(this, prop) || this;
+        _this.onBackUp = _this.onBackUp.bind(_this);
+        _this.onRestore = _this.onRestore.bind(_this);
+        _this.booksRefreshElement = React.createRef();
+        return _this;
+    }
+    Settings.prototype.render = function () {
+        return (React.createElement("div", null,
+            React.createElement("input", { className: "search-bar", ref: this.booksRefreshElement }),
+            React.createElement("div", { className: "search-flex-container" },
+                React.createElement("button", { className: "search-btn bg-info", onClick: this.onBackUp }, "Backup"),
+                React.createElement("button", { className: "get-lib-btn bg-primary", onClick: this.onRestore }, "Restore"))));
+    };
+    Settings.prototype.onBackUp = function () {
+        var _this = this;
+        this.props.settingModel.bakupBookLib().then(function () {
+            _this.props.onBackupDone();
+        });
+    };
+    Settings.prototype.onRestore = function () {
+        var _this = this;
+        if (this.booksRefreshElement.current) {
+            this.props.settingModel.restoreBookLib(this.booksRefreshElement.current.value)
+                .then(function (v) { return _this.props.onRestoreDone; });
+        }
+    };
+    return Settings;
+}(React.Component));
+exports.Settings = Settings;
 
 
 /***/ }),

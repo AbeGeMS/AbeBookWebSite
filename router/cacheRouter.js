@@ -51,4 +51,13 @@ router.put("/bookMark", function (req, res) {
         res.json("Set book " + bookId + " chapter " + chapter + " Failed.");
     }
 });
+router.put("/backup", function (req, res) {
+    var cacheService = new cacheService_1.CacheService(new bookService_1.BookService("", new httpUtility_1.HttpAgent()), new redisUtility_1.RedisAgent());
+    cacheService.getBookList().then(function (book) {
+        console.log("[" + new Date().toLocaleString() + "]Back up lib");
+        Promise.all(book.map(function (v) { return cacheService.getLatestCharpter(v.BookId).then(function (id) {
+            console.log("{\"bookId\": \"" + v.BookId + "\",\"charpterIndex\": " + id + "}");
+        }); })).then(function () { res.status(200); res.send(); }, function (err) { return res.json(err); });
+    });
+});
 module.exports = router;
