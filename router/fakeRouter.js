@@ -26,7 +26,9 @@ router.get("/books", function (req, res) {
 });
 router.delete("/bookMark/:id", function () {
 });
-router.put("/bookMark", function () {
+router.put("/bookMark", function (req, res) {
+    res.status(200);
+    res.send();
 });
 router.use(bodyParser());
 router.unsubscribe(cookieParser());
@@ -54,5 +56,22 @@ router.put("/BookDomain/:id", function (req, res) {
     else {
         res.status(500);
     }
+});
+router.put("/backup", function (req, res) {
+    var cacheService = {
+        getBookList: function () { return new Promise(function (resolve, reject) {
+            var books = [{ BookId: "1", Name: "001" }, { BookId: "2", Name: "002" }];
+            resolve(books);
+        }); },
+        getLatestCharpter: function (v) { return new Promise(function (resolve, reject) {
+            resolve(v + 1);
+        }); },
+    };
+    cacheService.getBookList().then(function (book) {
+        var pp = book.map(function (v) { return cacheService.getLatestCharpter(v.BookId).then(function (id) {
+            console.log("{\"bookId\": \"" + v.BookId + "\",\"charpterIndex\": " + id + "}");
+        }); });
+        Promise.all(pp).then(function () { res.status(200); res.send(); });
+    });
 });
 module.exports = router;
