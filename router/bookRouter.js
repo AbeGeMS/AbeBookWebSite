@@ -58,10 +58,11 @@ router.get("/source/:id", function (req, res) {
         url = getBookUrl(req.cookies && req.cookies.BaseDomain);
     }
     else {
-        url = paramId;
+        url = "https://" + paramId;
+        console.error(url);
     }
     var bookService = new bookService_1.BookService(url, new httpUtility_1.HttpAgent());
-    bookService.getSource(url).then(function (source) { return res.json({ "sourc": source }); }, function (err) {
+    bookService.getSource(url).then(function (source) { return res.json({ "source": source }); }, function (err) {
         res.status(500);
         res.send();
     });
