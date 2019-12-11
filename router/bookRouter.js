@@ -52,7 +52,7 @@ router.put("/BookDomain/:id", function (req, res) {
     }
 });
 router.get("/source/:id", function (req, res) {
-    var paramId = utility_1.decodingStr(req.param["id"]);
+    var paramId = utility_1.decodingStr(req.params["id"]);
     var url = "";
     if (!paramId) {
         url = getBookUrl(req.cookies && req.cookies.BaseDomain);
@@ -61,7 +61,7 @@ router.get("/source/:id", function (req, res) {
         url = paramId;
     }
     var bookService = new bookService_1.BookService(url, new httpUtility_1.HttpAgent());
-    bookService.getSource(url).then(function (source) { return res.send(source); }, function (err) {
+    bookService.getSource(url).then(function (source) { return res.json({ "sourc": source }); }, function (err) {
         res.status(500);
         res.send();
     });
