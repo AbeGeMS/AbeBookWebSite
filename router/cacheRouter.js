@@ -9,7 +9,7 @@ var routerName = "bookRouter";
 var router = express.Router();
 router.get('/latestChapter', function (req, res) {
     var baseUrl = utility_1.decodingStr(req.cookies && req.cookies.BaseDomain);
-    baseUrl = "https://" + baseUrl.trim() + ".com/";
+    baseUrl = getBookUrl(baseUrl.trim());
     var bookId = req.query.id;
     if (!baseUrl || !bookId) {
         res.json("cacheRouter.latestChapter: invailid parameter " + baseUrl + ", " + bookId);
@@ -24,7 +24,7 @@ router.get('/tableOfContent', function (req, res) {
 });
 router.get("/books", function (req, res) {
     var baseurl = utility_1.decodingStr(req.cookies && req.cookies.BaseDomain);
-    baseurl = "https://" + baseurl.trim() + ".com/";
+    baseurl = getBookUrl(baseurl.trim());
     if (baseurl) {
         var cacheService = new cacheService_1.CacheService(new bookService_1.BookService(baseurl, new httpUtility_1.HttpAgent()), new redisUtility_1.RedisAgent());
         cacheService.getBookList().then(function (books) { return res.json(books); }, function (error) { return res.json(error); });
@@ -41,7 +41,7 @@ router.put("/bookMark", function (req, res) {
     var bookId = req.body.id;
     var chapter = req.body.chapter;
     var baseurl = utility_1.decodingStr(req.cookies && req.cookies.BaseDomain);
-    baseurl = "https://" + baseurl.trim() + ".com/";
+    baseurl = getBookUrl(baseurl.trim());
     if (baseurl) {
         var cacheService_2 = new cacheService_1.CacheService(new bookService_1.BookService(baseurl, new httpUtility_1.HttpAgent()), new redisUtility_1.RedisAgent());
         cacheService_2.setBookMark(bookId, chapter)
@@ -60,4 +60,7 @@ router.put("/backup", function (req, res) {
         }); })).then(function () { res.status(200); res.send(); }, function (err) { return res.json(err); });
     });
 });
+function getBookUrl(bookDomain) {
+    return "https://www." + bookDomain + ".info";
+}
 module.exports = router;

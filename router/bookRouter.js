@@ -19,7 +19,7 @@ router.post('/book', function (req, res) {
             error: "invalid parameter Domain:" + bookDomain + " book:" + bookId + " chapter:" + chapterId
         });
     }
-    bookDomain = "https://" + bookDomain + ".com/";
+    bookDomain = getBookUrl(bookDomain);
     var bookService = new bookService_1.BookService(bookDomain, new httpUtility_1.HttpAgent());
     bookService.getContent(bookId, chapterId, index)
         .then(function (content) { return res.json(content); });
@@ -33,7 +33,7 @@ router.post('/tableOfContent', function (req, res) {
             error: "invalid parameter domain:" + bookDomain + " bookId:" + bookId,
         });
     }
-    bookDomain = "https://" + bookDomain + ".com/";
+    bookDomain = getBookUrl(bookDomain);
     var bookService = new bookService_1.BookService(bookDomain, new httpUtility_1.HttpAgent());
     bookService.getTableOfContent(bookId)
         .then(function (tableOfContent) { return res.json(tableOfContent); });
@@ -51,4 +51,22 @@ router.put("/BookDomain/:id", function (req, res) {
         res.status(500);
     }
 });
+router.get("/source/:id", function (req, res) {
+    var paramId = utility_1.decodingStr(req.param["id"]);
+    var url = "";
+    if (!paramId) {
+        url = getBookUrl(req.cookies && req.cookies.BaseDomain);
+    }
+    else {
+        url = getBookUrl(paramId);
+    }
+    var bookService = new bookService_1.BookService(url, new httpUtility_1.HttpAgent());
+    bookService.getSource(url).then(function (source) { return res.send(source); }, function (err) {
+        res.status(500);
+        res.send();
+    });
+});
+function getBookUrl(bookDomain) {
+    return "https://www." + bookDomain + ".info";
+}
 module.exports = router;
