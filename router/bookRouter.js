@@ -58,7 +58,7 @@ router.get("/source/:id", function (req, res) {
         url = getBookUrl(req.cookies && req.cookies.BaseDomain);
     }
     else {
-        url = getBookUrl(paramId);
+        url = paramId;
     }
     var bookService = new bookService_1.BookService(url, new httpUtility_1.HttpAgent());
     bookService.getSource(url).then(function (source) { return res.send(source); }, function (err) {
