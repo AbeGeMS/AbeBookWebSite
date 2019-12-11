@@ -52,6 +52,9 @@ var BookService = /** @class */ (function () {
             return new Promise(function (resolve, reject) { return reject(JSON.stringify(ex)); });
         }
     };
+    BookService.prototype.getSource = function (url) {
+        return this._http.get(url).then(function (html) { return html; });
+    };
     BookService.prototype.parseContent = function (html) {
         var _$ = cheerio.load(html);
         var contentList = _$("#content");
