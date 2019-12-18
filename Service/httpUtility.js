@@ -11,7 +11,10 @@ var HttpAgent = /** @class */ (function () {
             try {
                 https.get(url, function (res) {
                     res.setEncoding("utf-8");
-                    _this.getContent(res).then(function (html) { return resolve(html); }, function (error) { return reject(error); });
+                    _this.getContent(res).then(function (html) {
+                        console.error(html);
+                        resolve(html);
+                    }, function (error) { return reject(error); });
                 }).on("error", function (err) {
                     reject(err);
                 });

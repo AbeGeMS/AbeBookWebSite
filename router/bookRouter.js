@@ -54,7 +54,7 @@ router.put("/BookDomain/:id", function (req, res) {
 router.get("/source/:id", function (req, res) {
     console.error(req.params["id"]);
     var paramId = utility_1.decodingStr(req.params["id"]);
-    paramId = paramId.replace("-", "/");
+    paramId = paramId.replace(/-/g, "/");
     var url = "";
     if (!paramId) {
         url = getBookUrl(req.cookies && req.cookies.BaseDomain);
